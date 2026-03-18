@@ -1,7 +1,27 @@
-# Função responsável por ler o arquivo TXT
+"""
+Log Analyzer - TXT Version
+
+Este script lê um arquivo de logs em formato TXT e realiza algumas análises:
+
+1. Conta quantas vezes cada ação aparece (login, logout, etc.)
+2. Conta quantos logins falharam
+3. Descobre qual usuário fez mais login
+
+Formato esperado do arquivo logs.txt:
+
+login henry success
+login maria fail
+logout henry success
+
+Cada linha possui:
+acao usuario status
+"""
+
+
+# Função responsável por ler o arquivo TXT e converter para uma estrutura Python
 def ler_logs_txt(nome_arquivo):
 
-    # Lista que irá armazenar os logs convertidos
+    # Lista que armazenará todos os logs convertidos
     logs = []
 
     # Abre o arquivo no modo leitura
@@ -10,21 +30,25 @@ def ler_logs_txt(nome_arquivo):
         # Percorre cada linha do arquivo
         for linha in arquivo:
 
-            # Remove espaços e quebra de linha
+            # Remove espaços extras e quebra de linha
             linha = linha.strip()
 
             # Ignora linhas vazias
             if linha == "":
                 continue
 
-            # Ignora comentários
+            # Ignora comentários (linhas que começam com #)
             if linha.startswith("#"):
                 continue
 
             # Divide a linha em partes
             partes = linha.split()
 
-            # Cria um dicionário semelhante ao formato JSON
+            # Verifica se a linha possui o formato esperado
+            if len(partes) < 3:
+                continue
+
+            # Cria um dicionário representando o log
             log = {
                 "action": partes[0],
                 "user": partes[1],
@@ -38,10 +62,9 @@ def ler_logs_txt(nome_arquivo):
     return logs
 
 
-# Função que conta quantas vezes cada ação aparece
+# Conta quantas vezes cada ação aparece
 def contar_acoes(logs):
 
-    # Dicionário que armazenará a contagem
     contagem = {}
 
     for log in logs:
@@ -56,7 +79,7 @@ def contar_acoes(logs):
     return contagem
 
 
-# Função que conta quantos logins falharam
+# Conta quantos logins falharam
 def contar_login_falha(logs):
 
     total_falhas = 0
@@ -69,7 +92,7 @@ def contar_login_falha(logs):
     return total_falhas
 
 
-# Função que descobre qual usuário fez mais login
+# Descobre qual usuário fez mais login
 def usuario_com_mais_login(logs):
 
     logins_por_usuario = {}
@@ -85,6 +108,7 @@ def usuario_com_mais_login(logs):
             else:
                 logins_por_usuario[usuario] = 1
 
+    # Encontra o usuário com maior número de logins
     usuario_top = max(logins_por_usuario, key=logins_por_usuario.get)
 
     return usuario_top
@@ -93,7 +117,7 @@ def usuario_com_mais_login(logs):
 # Função principal que executa o programa
 def main():
 
-    # Lê os logs do arquivo TXT
+    # Lê os logs do arquivo
     logs = ler_logs_txt("logs.txt")
 
     # Executa as análises
@@ -101,7 +125,7 @@ def main():
     falhas_login = contar_login_falha(logs)
     usuario_top = usuario_com_mais_login(logs)
 
-    # Mostra os resultados
+    # Exibe os resultados
     print("Contagem de ações:", contagem)
     print("Logins com falha:", falhas_login)
     print("Usuário com mais login:", usuario_top)
