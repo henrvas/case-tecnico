@@ -1,64 +1,76 @@
-# Importa a biblioteca json para poder ler arquivos .json
+"""
+Log Analyzer - JSON Version
+
+Este script lê um arquivo JSON contendo logs de sistema e realiza algumas análises:
+
+1. Conta quantas vezes cada ação aparece (login, logout, etc.)
+2. Conta quantos logins falharam
+3. Descobre qual usuário fez mais login
+
+Formato esperado do JSON:
+
+{
+  "logs": [
+    {"user": "henry", "action": "login", "status": "success"},
+    {"user": "maria", "action": "login", "status": "fail"}
+  ]
+}
+"""
+
+# Importa a biblioteca json para leitura de arquivos JSON
 import json
 
 
-# Função responsável por ler o arquivo JSON
+# Função responsável por ler o arquivo JSON e retornar os logs
 def ler_logs(nome_arquivo):
 
     # Abre o arquivo no modo leitura
-    # encoding utf-8 garante que caracteres especiais funcionem corretamente
     with open(nome_arquivo, "r", encoding="utf-8") as arquivo:
 
         # Converte o JSON em um objeto Python (dicionário/lista)
         dados = json.load(arquivo)
 
-    # Retorna apenas a lista de logs dentro do JSON
+    # Retorna apenas a lista de logs
     return dados["logs"]
 
 
-# Função que conta quantas vezes cada ação aparece (login, logout etc.)
+# Conta quantas vezes cada ação aparece (login, logout, etc.)
 def contar_acoes(logs):
 
-    # Dicionário que vai armazenar a contagem das ações
+    # Dicionário que armazenará a contagem das ações
     contagem = {}
 
     # Percorre todos os logs
     for log in logs:
 
-        # Pega a ação do log (ex: login ou logout)
+        # Obtém a ação do log
         acao = log["action"]
 
-        # Se a ação já existe no dicionário, soma +1
+        # Atualiza a contagem
         if acao in contagem:
             contagem[acao] += 1
-
-        # Se não existir ainda, cria a chave com valor 1
         else:
             contagem[acao] = 1
 
-    # Retorna o resultado final da contagem
     return contagem
 
 
-# Função que conta quantos logins falharam
+# Conta quantos logins falharam
 def contar_login_falha(logs):
 
-    # Contador inicial
     total_falhas = 0
 
     # Percorre todos os logs
     for log in logs:
 
-        # Verifica se é login e se o status é falha
+        # Verifica se é login e se o status é fail
         if log["action"] == "login" and log["status"] == "fail":
-
-            # Soma +1 no contador
             total_falhas += 1
 
     return total_falhas
 
 
-# Função que descobre qual usuário fez mais login
+# Descobre qual usuário fez mais login
 def usuario_com_mais_login(logs):
 
     # Dicionário para armazenar logins por usuário
@@ -93,7 +105,7 @@ def main():
     falhas_login = contar_login_falha(logs)
     usuario_top = usuario_com_mais_login(logs)
 
-    # Mostra os resultados
+    # Exibe os resultados
     print("Contagem de ações:", contagem)
     print("Logins com falha:", falhas_login)
     print("Usuário com mais login:", usuario_top)
